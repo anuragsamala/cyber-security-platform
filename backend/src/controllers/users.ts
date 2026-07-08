@@ -15,7 +15,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const user = await prisma.user.findUnique({
       where: { id },
       select: { id: true, email: true, firstName: true, lastName: true, role: true, isActive: true, institutionId: true, createdAt: true }
@@ -32,7 +32,7 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { firstName, lastName, role, isActive, institutionId } = req.body;
     
     // Optional: Only Super Admins can change roles and institutionId.
@@ -49,7 +49,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     await prisma.user.delete({ where: { id } });
     res.json({ message: 'User deleted' });
   } catch (error: any) {

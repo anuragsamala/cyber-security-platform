@@ -12,7 +12,7 @@ export const getInstitutions = async (req: Request, res: Response) => {
 
 export const getInstitutionById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const institution = await prisma.institution.findUnique({ where: { id } });
     if (!institution) {
       res.status(404).json({ error: 'Institution not found' });
@@ -38,7 +38,7 @@ export const createInstitution = async (req: Request, res: Response) => {
 
 export const updateInstitution = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { name, address, contactInfo } = req.body;
     const institution = await prisma.institution.update({
       where: { id },
@@ -52,7 +52,7 @@ export const updateInstitution = async (req: Request, res: Response) => {
 
 export const deleteInstitution = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     await prisma.institution.delete({ where: { id } });
     res.json({ message: 'Institution deleted' });
   } catch (error: any) {

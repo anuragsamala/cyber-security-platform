@@ -19,7 +19,7 @@ export const getAssets = async (req: AuthRequest, res: Response) => {
 
 export const getAssetById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const asset = await prisma.asset.findUnique({
       where: { id },
       include: { department: true }
@@ -60,7 +60,7 @@ export const createAsset = async (req: Request, res: Response): Promise<void> =>
 
 export const updateAsset = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { name, type, owner, location, os, patchStatus, riskScore, departmentId, institutionId } = req.body;
     
     const asset = await prisma.asset.update({
@@ -75,7 +75,7 @@ export const updateAsset = async (req: Request, res: Response) => {
 
 export const deleteAsset = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     await prisma.asset.delete({ where: { id } });
     res.json({ message: 'Asset deleted' });
   } catch (error: any) {
