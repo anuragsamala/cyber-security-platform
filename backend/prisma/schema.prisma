@@ -1,0 +1,181 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  INSTITUTION_ADMIN
+  SECURITY_OFFICER
+  FACULTY
+  AUDITOR
+}
+
+enum Status {
+  OPEN
+  UNDER_INVESTIGATION
+  RESOLVED
+  CLOSED
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model Institution {
+  id          String   @id @default(uuid())
+  name        String
+  address     String?
+  contactInfo String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  departments Department[]
+  assets      Asset[]
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  role          Role     @default(FACULTY)
+  isActive      Boolean  @default(true)
+  institutionId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  institution   Institution? @relation(fields: [institutionId], references: [id])
+  incidents     Incident[]   @relation("AssignedOfficer")
+  activityLogs  ActivityLog[]
+}
+
+model Department {
+  id            String   @id @default(uuid())
+  name          String
+  institutionId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  assets        Asset[]
+}
+
+model Asset {
+  id            String   @id @default(uuid())
+  name          String
+  type          String   // e.g., Server, Router, Computer
+  owner         String?
+  location      String?
+  os            String?
+  patchStatus   String?
+  riskScore     Float?
+  departmentId  String?
+  institutionId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  department    Department? @relation(fields: [departmentId], references: [id])
+  institution   Institution @relation(fields: [institutionId], references: [id])
+}
+
+model Incident {
+  id               String    @id @default(uuid())
+  title            String
+  description      String
+  severity         RiskLevel
+  status           Status    @default(OPEN)
+  evidenceUrl      String?
+  assignedOfficerId String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  assignedOfficer  User?     @relation("AssignedOfficer", fields: [assignedOfficerId], references: [id])
+}
+
+model Risk {
+  id             String    @id @default(uuid())
+  title          String
+  description    String
+  likelihood     Float     // e.g., 1 to 5
+  impact         Float     // e.g., 1 to 5
+  riskScore      Float     // likelihood * impact
+  level          RiskLevel
+  mitigationPlan String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model ComplianceRecord {
+  id              String   @id @default(uuid())
+  framework       String   // ISO 27001, NIST, etc.
+  controlName     String
+  isCompliant     Boolean
+  evidence        String?
+  recommendation  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Audit {
+  id              String   @id @default(uuid())
+  title           String
+  type            String   // Internal, External
+  scheduledDate   DateTime
+  completedDate   DateTime?
+  findings        String?
+  recommendations String?
+  evidenceUrl     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Policy {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  version         String
+  documentUrl     String
+  status          String   // Draft, Approved, Archived
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  userId    String
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  action    String
+  details   String?
+  userId    String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model ScoreHistory {
+  id            String   @id @default(uuid())
+  score         Float
+  month         String   // e.g. "2025-01"
+  institutionId String?
+  createdAt     DateTime @default(now())
+}

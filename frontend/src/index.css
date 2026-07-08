@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+:root {
+  --primary-color: #0ea5e9; /* Sky Blue */
+  --secondary-color: #a855f7; /* Purple */
+  --accent-color: #2dd4bf; /* Neon Teal */
+  --background-dark: #0f172a; /* Slate 900 */
+  --surface-dark: #1e293b; /* Slate 800 */
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background-dark);
+  color: #f8fafc;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
